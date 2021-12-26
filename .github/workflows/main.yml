@@ -11,5 +11,4 @@ jobs:
     steps:
       - name: My step
         run: |
-          echo "emteknetnz/gha-test"
           echo "github.repository ${{ github.repository }}"
