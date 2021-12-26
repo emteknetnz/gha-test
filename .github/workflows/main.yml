@@ -1,0 +1,15 @@
+name: Main
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  myjob:
+    name: My Job
+    runs-on: ubuntu-latest
+    steps:
+      - name: My step
+        run: |
+          echo "emteknetnz/gha-test"
+          echo "github.repository ${{ github.repository }}"
