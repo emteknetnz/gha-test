@@ -1,0 +1,13 @@
+name: Not main
+
+on:
+  pull_request:
+
+jobs:
+  myjob:
+    name: My Job
+    runs-on: ubuntu-latest
+    steps:
+      - name: My step
+        run: |
+          echo "Not main!"
