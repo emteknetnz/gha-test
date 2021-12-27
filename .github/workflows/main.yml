@@ -7,7 +7,50 @@ jobs:
   myjob:
     name: My Job
     runs-on: ubuntu-latest
+    env:
+      branch_name: fork-pr-branch
+      pr_title: GitHub Actions PR
+      pr_desc: Test creating PR via github actions fork pull-request
     steps:
       - name: My step
         run: |
           echo "github.repository ${{ github.repository }}"
+          echo "Line added in fork pull-request"
+          
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Update readme
+        run: |
+          echo "Update readme via github actions" >> README.md
+
+      - name: Git commit
+        run: |
+          git config --local user.name "github-actions"
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b ${{ env.branch_name }}
+          git add .
+          git status
+          git commit -m "${{ env.pr_title }}"
+          
+      - name: Git push
+        run: |
+          git push --set-upstream origin ${{ env.branch_name }}
+          
+      - name: Create PR via GitHub API
+        run: |
+          # Create new pull-request via GitHub API
+          # https://docs.github.com/en/rest/reference/pulls#create-a-pull-request
+          curl -s \
+          -X POST https://api.github.com/repos/${{ github.repository }}/pulls \
+          -H "Accept: application/vnd.github.v3+json" \
+          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+          -d @- << EOF
+          {
+            "title": "${{ env.pr_title }}",
+            "body": "${{ env.pr_desc }}",
+            "head": "${{ env.branch_name }}",
+            "base": "main"
+          }
+          EOF
+          echo "New pull-request created"
