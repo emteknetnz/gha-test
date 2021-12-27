@@ -1,0 +1,13 @@
+name: Pull request target
+
+on:
+  pull_request_target:
+
+jobs:
+  myjob:
+    name: My Job
+    runs-on: ubuntu-latest
+    steps:
+      - name: My step
+        run: |
+          echo "Pull request target!"
