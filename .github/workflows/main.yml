@@ -9,6 +9,7 @@ jobs:
     name: My Job
     runs-on: ubuntu-latest
     env:
+      branch_name: fork-pr-branch
       pr_title: GitHub Actions PR
       pr_desc: Test creating PR via github actions fork pull-request
     steps:
@@ -26,17 +27,13 @@ jobs:
 
       - name: Git commands
         run: |
-          # Run git commit, push and create pull-request as 'github-actions' user
-          # refs/heads/mybranch => mybranch
-          BRANCH=$(echo ${{ github.ref }} | cut -c 12-)
-          NEW_BRANCH=pulls/$BRANCH/update-js-$(date +%s)
           git config --local user.name "github-actions"
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git checkout -b $NEW_BRANCH
+          git checkout -b ${{ env.branch_name }}
           git add .
           git status
           git commit -m "${{ env.pr_title }}"
-          git push --set-upstream origin $NEW_BRANCH
+          git push --set-upstream origin ${{ env.branch_name }}
           
       - name: Create PR via GitHub API
         run: |
@@ -50,8 +47,8 @@ jobs:
           {
             "title": "${{ env.pr_title }}",
             "body": "${{ env.pr_desc }}",
-            "head": "$NEW_BRANCH",
-            "base": "$BRANCH"
+            "head": "${{ env.branch_name }}",
+            "base": "main"
           }
           EOF
           echo "New pull-request created"
